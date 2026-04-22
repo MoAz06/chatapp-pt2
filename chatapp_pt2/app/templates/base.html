@@ -1,0 +1,38 @@
+<!-- base layout for all frontend pages of our application -->
+<html>
+    <head> <!--tab title-->
+        {% if title %}
+            <title>{{ title }} - chatapp</title>
+        {% else %}
+            <title>chatapp</title>
+        {% endif %}
+    </head>
+    <body>
+        <div> <!--navigation bar-->
+            ChatApp:
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('chat') }}">Chat</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a href="{{ url_for('register') }}">Register</a>
+            {% endif %}
+        </div>
+
+        <hr> 
+<!--show new message popup-->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+
+        {% block content %} <!-- implement additional page frontend -->{% endblock %}
+    </body>
+</html>
+

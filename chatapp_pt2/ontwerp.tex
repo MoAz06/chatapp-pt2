@@ -1,0 +1,57 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+
+\title{PT2 ontwerp}
+\author{Daan van den Brom}
+\date{April 2026}
+
+\begin{document}
+
+\maketitle
+
+\section*{Eisen}
+\subsection*{Frontend}
+\subsubsection*{Aanmeldscherm}
+Opstarten met een aanmeldscherm, dat vraagt naar gebruikersnaam en wachtwoord.
+
+Er is een knop om de gevraagde data te versturen
+
+In dit scherm zit ook een optie om een nieuw account aan te maken, dit verwijst naar een registratiescherm.
+
+\subsubsection*{Registratiescherm}
+Er is een veld voor gebruikersnaam, wachtwoord, en wachtwoordcontrole. Er is een knop om de ingevoerde data te versturen, en er is een link voor bekende gebruikers om naar het login-scherm te gaan.
+
+\subsubsection*{Chatscherm}
+Lijst met actieve gebruikers waar op geklikt kan worden. Als er een gebruiker geselecteerd wordt, wordt de chatgeschiedenis met deze gebruiker geopend. Deze chatgeschiedenis loopt van oud(boven) naar nieuw(onder).
+Het chatscherm heeft een uitlogknop, bij aanklikken verdwijnt de gebruiker uit de lijst actieve gebruikers en gaat hij naar het inlogscherm.
+In het chatscherm kan er ook een groepschat aangemaakt worden. Als een gebruiker lid is van een groepschat, is deze te zien in de lijst van actieve gebruikers. De leden zien hierin berichten die door alle leden in deze chat verstuurd zijn, en kunnen zelf ook sturen in deze chat. 
+
+\subsection*{Backend}
+\subsubsection*{Aanmeldscherm}
+De data uit de forms moet gecontroleerd worden als er op sign in geklikt wordt. Als de gebruikersnaam en het wachtwoord niet kloppen wordt er een foutmelding gegeven. Als de inlog klopt, wordt de gebruiker doorgestuurd naar het chatscherm. 
+Als er geklikt wordt op Click to Register wordt de gebruiker doorverwezen naar het registratiescherm.
+
+\subsubsection*{Registratiescherm}
+Als er op register geklikt wordt, wordt de data gecontroleerd. 
+Allereerst wordt er gecheckt of de username al in gebruik is, mocht dit het geval zijn, wordt het proces afgebroken en geeft de applicatie een foutmelding.
+Is dit niet het geval, wordt het wachtwoord gecontroleerd of het langer dan 8 karakters is en of de twee ingevoerde wachtwoorden met elkaar overeen komen. Als dit het geval is, wordt de gebruiker geregistreerd en wordt de data verzonden naar de database. 
+
+\subsubsection*{Chatscherm}
+De lijst met online users moet gegenereerd worden.
+Chats en groepschats moeten geladen kunnen worden als er op wordt geklikt.
+De chats moeten om de zoveel tijd gerefreshed worden, zodat nieuwe berichten ingeladen worden als ze verstuurd zijn.
+Afzender en tijd moeten weergegeven worden in de chatgeschiedenis.
+Verzonden chats moeten opgeslagen worden in de database.
+Als de gebruiker uitlogt, wordt hij uit de lijst van actieve gebruikers gehaald. Dit gebeurt ook als hij de pagina afsluit.
+
+\subsubsection*{Beveiliging}
+Het moet onmogelijk zijn om priveberichten tussen twee andere gebruikers te lezen.
+Het moet ook onmogelijk zijn om onder de gebruikersnaam van een ander te chatten, dus dubbele registratie moet onmogelijk zijn. 
+
+\subsection*{Database}
+In de database moet een Users tabel staan, waarin een user-id, naam, wachtwoord en status (online of niet) wordt opgeslagen.
+In de database moet ook een PrivateMessages tabel staan, waarin alle priveberichten worden opgeslagen. Hierbij moet de tekst opgeslagen worden, maar ook wie de sender en receiver zijn, en hoelaat dit bericht verzonden is. 
+Er moet een Groupchat tabel zijn, waarin alle groupchat id's en namen opgeslagen worden. Er is een andere tabel nodig waarin duidelijk is wie in welke groupchat zit. 
+Tot slot is er een tabel nodig waarin alle GroupchatMessages opgeslagen worden. Hierbij wordt de tekst opgeslagen, maar ook hoe laat, wie het bericht heeft verstuurd en naar welke chat dit bericht verzonden is. 
+
+\end{document}

@@ -1,0 +1,165 @@
+<!--chat window frontend-->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Chat</h1>
+
+<p>Logged in as <strong>{{ current_user.username }}</strong></p>
+<p><a href="{{ url_for('logout') }}">Logout</a></p>
+
+<hr>
+
+<!--show list of active users-->
+<h2>Active users</h2>
+<ul>
+    {% for user in active_users %}
+        <li>
+            <a href="{{ url_for('chat', user_id=user.id) }}">{{ user.username }}</a>
+        </li>
+    {% else %}
+        <li>No active users.</li>
+    {% endfor %}
+</ul>
+
+<hr>
+
+<!--show list of group chats-->
+<h2>Your group chats</h2>
+<ul>
+    {% for group in groups %}
+        <li>
+            <a href="{{ url_for('chat', group_id=group.id) }}">{{ group.name }}</a>
+        </li>
+    {% else %}
+        <li>No group chats yet.</li>
+    {% endfor %}
+</ul>
+
+<hr>
+
+<!--logic for adding group chats-->
+<h2>Create group chat</h2>
+<form action="{{ url_for('create_group') }}" method="post">
+    {{ group_form.hidden_tag() }}
+
+    <p>
+        {{ group_form.name.label }}<br>
+        {{ group_form.name(size=30) }}
+    </p>
+
+    <p>
+        {{ group_form.members.label }}<br>
+        {{ group_form.members(size=8) }}
+    </p>
+
+    <p>{{ group_form.submit() }}</p>
+</form>
+
+<hr>
+
+<!--show selected chat-->
+{% if selected_user %}
+    <h2>Chat with {{ selected_user.username }}</h2>
+
+    <div id="private-chat-messages">
+        {% for message in private_messages %}
+            <p>
+                <strong>
+                    {% if message.sender_id == current_user.id %}
+                        {{ current_user.username }}
+                    {% else %}
+                        {{ selected_user.username }}
+                    {% endif %}
+                </strong>
+                - {{ message.timestamp.strftime('%Y-%m-%d %H:%M') }}<br>
+                {{ message.body }}
+            </p>
+        {% else %}
+            <p>No messages yet.</p>
+        {% endfor %}
+    </div>
+<!--chat sending logic-->
+    <form action="{{ url_for('send_message', user_id=selected_user.id) }}" method="post">
+        {{ private_form.hidden_tag() }}
+
+        <p>
+            {{ private_form.body(rows=4, cols=50) }}
+        </p>
+
+        <p>{{ private_form.submit() }}</p>
+    </form>
+{% endif %}
+
+<!--show selected groupchat-->
+{% if selected_group %}
+    <h2>Group chat: {{ selected_group.name }}</h2>
+
+    <div id="group-chat-messages">
+        {% for message in group_messages %}
+            <p>
+                <strong>{{ message.sender.username }}</strong>
+                - {{ message.timestamp.strftime('%Y-%m-%d %H:%M') }}<br>
+                {{ message.body }}
+            </p>
+        {% else %}
+            <p>No messages yet.</p>
+        {% endfor %}
+    </div>
+
+    <form action="{{ url_for('send_group_message', group_id=selected_group.id) }}" method="post">
+        {{ group_message_form.hidden_tag() }}
+
+        <p>
+            {{ group_message_form.body(rows=4, cols=50) }}
+        </p>
+
+        <p>{{ group_message_form.submit() }}</p>
+    </form>
+{% endif %}
+
+{% if not selected_user and not selected_group %}
+    <p>Select an active user or a group chat.</p>
+{% endif %}
+
+
+<!-- socketio client library inladen -->
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+<!--frontend connectie naar de socket-->
+<script>
+    //websocket connectie aanmaken
+    var socket = io();
+    
+    //als er een nieuw privébericht binnenkomt, aan de chat div plakken
+    socket.on('new_private_message', function(msg) {
+        var chatDiv = document.getElementById('private-chat-messages');
+        if (!chatDiv) return; //doe dit alleen als de chat open is
+
+        //laad alleen berichten in de huidige geopende chat
+        var selectedUserId = {{ selected_user.id if selected_user else 'null' }};
+        if (msg.sender_id !== selectedUserId && msg.receiver_id !== selectedUserId) return;
+
+        var p = document.createElement('p');
+        p.innerHTML = '<strong>' + msg.sender_username + '</strong> - ' +
+                      msg.timestamp + '<br>' + msg.body;
+        chatDiv.appendChild(p);
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+    });
+
+    //zelfde proces voor groepschats
+    socket.on('new_group_message', function(msg) {
+        var chatDiv = document.getElementById('group-chat-messages');
+        if (!chatDiv) return;
+
+        var selectedGroupId = {{ selected_group.id if selected_group else 'null' }};
+        if (msg.group_id !== selectedGroupId) return;
+
+        var p = document.createElement('p');
+        p.innerHTML = '<strong>' + msg.sender_username + '</strong> - ' +
+                      msg.timestamp + '<br>' + msg.body;
+        chatDiv.appendChild(p);
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+    });
+</script>
+{% endblock %}

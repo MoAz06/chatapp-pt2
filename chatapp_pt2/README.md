@@ -77,3 +77,9 @@ This project was originally developed in a private university GitLab environment
 The commit history here is limited because the project was later migrated to GitHub.
 
 The focus of this repository is to showcase the final implementation and functionality.
+
+## Screenshots
+
+### Real-time chat
+
+![Chat Demo](screenshots/chat-demo.png)

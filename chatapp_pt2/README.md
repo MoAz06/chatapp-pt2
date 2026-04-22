@@ -70,3 +70,10 @@ The base application was extended with real-time chat functionality using WebSoc
 ## Author
 
 Mohamed Azahrioui
+
+## Notes
+
+This project was originally developed in a private university GitLab environment (LIACS).  
+The commit history here is limited because the project was later migrated to GitHub.
+
+The focus of this repository is to showcase the final implementation and functionality.
